@@ -23,6 +23,7 @@
       {{ wtf.form_field(form.submit) }}
     </form>
     <br>
+    <p>Forget your password?<a href="{{ url_for('auth.password_reset_request') }}">Click here to reset it</a>. </p>
     <p>New User?<a href="#">Click here to register</a> </p>
 </div>
 {% endblock %}
