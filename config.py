@@ -20,7 +20,7 @@ class DevelopmentConfig(Config):
     DEBUG = True
     MAIL_SERVER = 'smtp.mail.yahoo.com'
     MAIL_PORT = 587
-    MAIL_USER_TLS = True
+    MAIL_USE_TLS = True
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
