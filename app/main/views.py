@@ -26,7 +26,8 @@ def index():
 @login_required
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
-    return render_template('user.html', user=user)
+    questions = Question.query.order_by(Question.timestamp.desc()).all()
+    return render_template('user.html', user=user, questions=questions)
 
 
 @main.route('/edit-profile', methods=['GET', 'POST'])

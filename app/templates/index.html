@@ -12,20 +12,5 @@
     {{ wtf.quick_form(form) }}
     {% endif %}
 </div>
-<ul class="questions">
-    {% for question in questions %}
-    <li class="question">
-        <div class="profile-thumbnail">
-            <a href="{{ url_for('.user', username=question.author.username) }}">
-                <img class="img-circle profile-thumbnail" src="{{ question.author.gravatar(size=40) }}">
-            </a>
-        </div>
-        <div class="question-content">
-            <div class="question-date">{{ moment(question.timestamp).fromNow() }}</div>
-            <div class="question-author"><a href="{{ url_for('.user', username=question.author.username) }}">{{ question.author.username }}</a> </div>
-            <div class="question-body">{{ question.body }}</div>
-        </div>
-    </li>
-    {% endfor %}
-</ul>
+{% include "_questions.html" %}
 {% endblock %}
