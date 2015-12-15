@@ -1,15 +1,31 @@
 {% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %}Flaskq{% endblock %}
 
 {% block page_content %}
 <div class="page-header">
-<h1>Hello,
-{% if current_user.is_authenticated %}
-    {{ current_user.username }}
-{% else %}
-    Stranger
-{% endif %}!
-</h1>
+<h1>Hello, {% if current_user.is_authenticated %}{{ current_user.username }}{% else %}Stranger{% endif %}!</h1>
 </div>
+<div>
+    {% if current_user.can(Permission.ASK) %}
+    {{ wtf.quick_form(form) }}
+    {% endif %}
+</div>
+<ul class="questions">
+    {% for question in questions %}
+    <li class="question">
+        <div class="profile-thumbnail">
+            <a href="{{ url_for('.user', username=question.author.username) }}">
+                <img class="img-circle profile-thumbnail" src="{{ question.author.gravatar(size=40) }}">
+            </a>
+        </div>
+        <div class="question-content">
+            <div class="question-date">{{ moment(question.timestamp).fromNow() }}</div>
+            <div class="question-author"><a href="{{ url_for('.user', username=question.author.username) }}">{{ question.author.username }}</a> </div>
+            <div class="question-body">{{ question.body }}</div>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
 {% endblock %}

@@ -42,3 +42,9 @@ class EditProfileAdminForm(Form):
         if field.data != self.user.username and \
                 User.query.filter_by(username=field.data).first():
             raise ValidationError('Username already in use.')
+
+
+class QuestionForm(Form):
+    body = StringField("What's your question?", validators=[Required()])
+    detail = TextAreaField('You can add details')
+    submit = SubmitField('Submit')

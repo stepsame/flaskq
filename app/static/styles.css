@@ -6,3 +6,32 @@
     min-height: 260px;
     margin-left: 280px;
 }
+
+.questions {
+    list-style-type: none;
+    padding: 0;
+    margin: 16px 0 0 0;
+    border-top: 1px solid #e0e0e0;
+}
+
+.questions .question {
+    padding: 8px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.questions .question:hover {
+    background-color: #f0f0f0;
+}
+
+.question-content {
+    margin-left: 48px;
+    min-height: 48px;
+}
+
+.question-date {
+    float: right;
+}
+
+.question-author {
+    font-weight: bold;
+}

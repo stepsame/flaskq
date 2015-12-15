@@ -1,15 +1,25 @@
 from flask import render_template, flash, redirect, url_for
 from flask.ext.login import login_required, current_user
 from . import main
-from .forms import EditProfileForm, EditProfileAdminForm
+from .forms import EditProfileForm, EditProfileAdminForm, QuestionForm
 from .. import db
-from ..models import User, Role
+from ..models import User, Role, Permission, Question
 from ..decorators import admin_required
 
 
-@main.route('/')
+@main.route('/', methods=['GET', 'POST'])
+@login_required
 def index():
-    return render_template('index.html')
+    form = QuestionForm()
+    if current_user.can(Permission.ASK) and \
+            form.validate_on_submit():
+        question = Question(body=form.body.data,
+                            detail=form.detail.data,
+                            author=current_user._get_current_object())
+        db.session.add(question)
+        return redirect(url_for('.index'))
+    questions = Question.query.order_by(Question.timestamp.desc()).all()
+    return render_template('index.html', form=form, questions=questions)
 
 
 @main.route('/user/<username>')
