@@ -7,11 +7,20 @@
     margin-left: 280px;
 }
 
+.question-tabs {
+    margin-top: 16px;
+}
+
 .questions {
     list-style-type: none;
     padding: 0;
     margin: 16px 0 0 0;
     border-top: 1px solid #e0e0e0;
+}
+
+.question-tabs .questions{
+    margin: 0;
+    border-top: none;
 }
 
 .questions .question {
@@ -21,6 +30,10 @@
 
 .questions .question:hover {
     background-color: #f0f0f0;
+}
+
+.question-thumbnail {
+    position: absolute;
 }
 
 .question-content {

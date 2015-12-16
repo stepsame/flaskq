@@ -1,7 +1,7 @@
 <ul class="questions">
     {% for question in questions %}
     <li class="question">
-        <div class="profile-thumbnail">
+        <div class="question-thumbnail">
             <a href="{{ url_for('.user', username=question.author.username) }}">
                 <img class="img-circle profile-thumbnail" src="{{ question.author.gravatar(size=40) }}">
             </a>
