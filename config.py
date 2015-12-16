@@ -11,6 +11,7 @@ class Config:
     FLASKQ_MAIL_SENDER = 'Flaskq Admin <stepsame@yahoo.com>'
     FLASKQ_ADMIN = os.environ.get('FLASKQ_ADMIN')
     FLASKQ_QUESTIONS_PER_PAGE = 20
+    FLASKQ_FOLLOWERS_PER_PAGE = 50
 
     @staticmethod
     def init_app(app):

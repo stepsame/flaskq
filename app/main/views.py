@@ -1,11 +1,11 @@
-from flask import render_template, flash, redirect, url_for,request,\
+from flask import render_template, flash, redirect, url_for, request, \
     current_app, abort
 from flask.ext.login import login_required, current_user
 from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, QuestionForm
 from .. import db
 from ..models import User, Role, Permission, Question
-from ..decorators import admin_required
+from ..decorators import admin_required, permission_required
 
 
 @main.route('/', methods=['GET', 'POST'])
@@ -21,8 +21,8 @@ def index():
         return redirect(url_for('.index'))
     page = request.args.get('page', 1, type=int)
     pagination = Question.query.order_by(Question.timestamp.desc()).paginate(
-        page, per_page=current_app.config['FLASKQ_QUESTIONS_PER_PAGE'],
-        error_out=False)
+            page, per_page=current_app.config['FLASKQ_QUESTIONS_PER_PAGE'],
+            error_out=False)
     questions = pagination.items
     return render_template('index.html', form=form, questions=questions,
                            pagination=pagination)
@@ -34,8 +34,8 @@ def user(username):
     user = User.query.filter_by(username=username).first_or_404()
     page = request.args.get('page', 1, type=int)
     pagination = user.questions.order_by(Question.timestamp.desc()).paginate(
-        page=page, per_page=current_app.config['FLASKQ_QUESTIONS_PER_PAGE'],
-        error_out=False)
+            page=page, per_page=current_app.config['FLASKQ_QUESTIONS_PER_PAGE'],
+            error_out=False)
     questions = pagination.items
     return render_template('user.html', user=user, questions=questions,
                            pagination=pagination)
@@ -109,3 +109,71 @@ def edit_question(id):
     form.body.data = question.body
     form.detail.data = question.detail
     return render_template('edit_question.html', form=form)
+
+
+@main.route('/follow/<username>')
+@login_required
+@permission_required(Permission.FOLLOW)
+def follow(username):
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        flash('Invalid user.')
+        return redirect(url_for('.index'))
+    if current_user.is_following(user):
+        flash('You are already following this user.')
+        return redirect(url_for('.user', username=username))
+    current_user.follow(user)
+    flash('You are now following %s.' % username)
+    return redirect(url_for('.user', username=username))
+
+
+@main.route('/unfollow/<username>')
+@login_required
+@permission_required(Permission.FOLLOW)
+def unfollow(username):
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        flash('Invalid user.')
+        return redirect(url_for('.index'))
+    if not current_user.is_following(user):
+        flash('You are not following this user.')
+        return redirect(url_for('.user', username=username))
+    current_user.unfollow(user)
+    flash('You are not following %s anymore.' % username)
+    return redirect(url_for('.user', username=username))
+
+
+@main.route('/followers/<username>')
+@login_required
+def followers(username):
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        flash('Invalid user.')
+        return redirect(url_for('.index'))
+    page = request.args.get('page', 1, type=int)
+    pagination = user.followers.paginate(
+            page, per_page=current_app.config['FLASKQ_FOLLOWERS_PER_PAGE'],
+            error_out=False)
+    follows = [{'user': item.follower, 'timestamp': item.timestamp}
+               for item in pagination.items]
+    return render_template('followers.html', user=user, title="Follwers of",
+                           endpoint='.followers', pagination=pagination,
+                           follows=follows)
+
+
+@main.route('/followed-by/<username>')
+@login_required
+def followed_by(username):
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        flash('Invalid user.')
+        return redirect(url_for('.index'))
+    page = request.args.get('page', 1, type=int)
+    pagination = user.followed.paginate(
+            page, per_page=current_app.config['FLASKQ_FOLLOWERS_PER_PAGE'],
+            error_out=False)
+    follows = [{'user': item.followed, 'timestamp': item.timestamp}
+               for item in pagination.items]
+    return render_template('followers.html', user=user, title="Follwed by",
+                           endpoint='.followed_by', pagination=pagination,
+                           follows=follows)
