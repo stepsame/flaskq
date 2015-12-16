@@ -222,6 +222,11 @@ class User(UserMixin, db.Model):
         return self.followers.filter_by(
             follower_id=user.id).first() is not None
 
+    @property
+    def followed_questions(self):
+        return Question.query.join(Follow, Follow.followed_id == Question.author_id)\
+            .filter_by(Follow.follower_id == self.id)
+
     def __repr__(self):
         return '<User %r>' % self.username
 
