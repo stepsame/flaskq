@@ -1,5 +1,5 @@
 from flask import render_template, flash, redirect, url_for,request,\
-    current_app
+    current_app, abort
 from flask.ext.login import login_required, current_user
 from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, QuestionForm
@@ -85,8 +85,27 @@ def edit_profile_admin(id):
     return render_template('edit_profile.html', form=form)
 
 
-@main.route('/post/<int:id>')
+@main.route('/question/<int:id>')
 @login_required
 def question(id):
     question = Question.query.get_or_404(id)
     return render_template('question.html', questions=[question])
+
+
+@main.route('/edit-question/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_question(id):
+    question = Question.query.get_or_404(id)
+    if current_user != question.author and \
+            not current_user.can(Permission.ADMINISTER):
+        abort(403)
+    form = QuestionForm()
+    if form.validate_on_submit():
+        question.body = form.body.data
+        question.detail = form.detail.data
+        db.session.add(question)
+        flash('The question has been updated.')
+        return redirect(url_for('.question', id=question.id))
+    form.body.data = question.body
+    form.detail.data = question.detail
+    return render_template('edit_question.html', form=form)
