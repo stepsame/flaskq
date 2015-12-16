@@ -36,6 +36,10 @@
     font-weight: bold;
 }
 
+.question-footer {
+    text-align: right;
+}
+
 div.pagination {
     width: 100%;
     text-align: right;
