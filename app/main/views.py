@@ -1,4 +1,5 @@
-from flask import render_template, flash, redirect, url_for
+from flask import render_template, flash, redirect, url_for,request,\
+    current_app
 from flask.ext.login import login_required, current_user
 from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, QuestionForm
@@ -18,16 +19,26 @@ def index():
                             author=current_user._get_current_object())
         db.session.add(question)
         return redirect(url_for('.index'))
-    questions = Question.query.order_by(Question.timestamp.desc()).all()
-    return render_template('index.html', form=form, questions=questions)
+    page = request.args.get('page', 1, type=int)
+    pagination = Question.query.order_by(Question.timestamp.desc()).paginate(
+        page, per_page=current_app.config['FLASKQ_QUESTIONS_PER_PAGE'],
+        error_out=False)
+    questions = pagination.items
+    return render_template('index.html', form=form, questions=questions,
+                           pagination=pagination)
 
 
 @main.route('/user/<username>')
 @login_required
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
-    questions = user.questions.order_by(Question.timestamp.desc()).all()
-    return render_template('user.html', user=user, questions=questions)
+    page = request.args.get('page', 1, type=int)
+    pagination = user.questions.order_by(Question.timestamp.desc()).paginate(
+        page=page, per_page=current_app.config['FLASKQ_QUESTIONS_PER_PAGE'],
+        error_out=False)
+    questions = pagination.items
+    return render_template('user.html', user=user, questions=questions,
+                           pagination=pagination)
 
 
 @main.route('/edit-profile', methods=['GET', 'POST'])
