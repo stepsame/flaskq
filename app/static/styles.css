@@ -35,3 +35,10 @@
 .question-author {
     font-weight: bold;
 }
+
+div.pagination {
+    width: 100%;
+    text-align: right;
+    padding: 0;
+    margin: 0;
+}
