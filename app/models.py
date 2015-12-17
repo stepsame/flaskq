@@ -86,6 +86,7 @@ class User(UserMixin, db.Model):
                                 lazy='dynamic',
                                 cascade='all, delete-orphan')
     answers = db.relationship('Answer', backref='author', lazy='dynamic')
+    comments= db.relationship('Comment', backref='author', lazy='dynamic')
 
     @staticmethod
     def generate_fake(count=100):
@@ -267,6 +268,7 @@ class Question(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     answers = db.relationship('Answer', backref='question', lazy='dynamic')
+    comments = db.relationship('Comment', backref='question', lazy='dynamic')
 
     @staticmethod
     def generate_fake(count=100):
@@ -294,6 +296,7 @@ class Answer(db.Model):
     disabled = db.Column(db.Boolean)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     question_id = db.Column(db.Integer, db.ForeignKey('questions.id'))
+    comments = db.relationship('Comment', backref='answer', lazy='dynamic')
 
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
@@ -306,3 +309,14 @@ class Answer(db.Model):
 
 
 db.event.listen(Answer.body, 'set', Answer.on_changed_body)
+
+
+class Comment(db.Model):
+    __tablename__ = 'comments'
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.String(64))
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    disabled = db.Column(db.Boolean)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    question_id = db.Column(db.Integer, db.ForeignKey('questions.id'))
+    answer_id = db.Column(db.Integer, db.ForeignKey('answers.id'))
