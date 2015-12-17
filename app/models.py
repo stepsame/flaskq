@@ -286,7 +286,7 @@ class Question(db.Model):
 
 
 class Answer(db.Model):
-    __tablename__ = 'comments'
+    __tablename__ = 'answers'
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.Text)
     body_html = db.Column(db.Text)

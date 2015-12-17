@@ -12,6 +12,7 @@ class Config:
     FLASKQ_ADMIN = os.environ.get('FLASKQ_ADMIN')
     FLASKQ_QUESTIONS_PER_PAGE = 20
     FLASKQ_FOLLOWERS_PER_PAGE = 50
+    FLASKQ_ANSWERS_PER_PAGE = 30
 
     @staticmethod
     def init_app(app):

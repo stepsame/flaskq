@@ -48,3 +48,8 @@ class QuestionForm(Form):
     body = StringField("What's your question?", validators=[Required()])
     detail = TextAreaField('You can add details')
     submit = SubmitField('Submit')
+
+
+class AnswerForm(Form):
+    body = TextAreaField('Enter your answer', validators=[Required()])
+    submit = SubmitField('Submit')

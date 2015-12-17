@@ -23,6 +23,9 @@
                 <a href="{{ url_for('.question', id=question.id) }}">
                     <span class="label label-default">Permalink</span>
                 </a>
+                <a href="{{ url_for('.question', id=question.id) }}#answers">
+                    <span class="label label-primary">{{ question.answers.count() }} Answers</span>
+                </a>
             </div>
         </div>
     </li>

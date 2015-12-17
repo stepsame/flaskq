@@ -63,3 +63,44 @@ div.pagination {
 .table.followers tr {
     border-bottom: 1px solid #e0e0e0;
 }
+
+.answers {
+    list-style-type: none;
+    padding: 0;
+    margin: 16px 0 0 0;
+}
+
+.answers .answer {
+    margin-left: 32px;
+    padding: 8px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.answers .answer:nth-child(1) {
+    border-top: 1px solid #e0e0e0;
+}
+
+.answers .answer:hover {
+    background-color: #f0f0f0;
+}
+
+.answer-date {
+    float: right;
+}
+
+.answer-author {
+    font-weight: bold;
+}
+
+.answer-thumbnail {
+    position: absolute;
+}
+
+.answer-content {
+    margin-left: 48px;
+    min-height: 48px;
+}
+
+.answer-form {
+    margin: 16px 0 16px 32px;
+}

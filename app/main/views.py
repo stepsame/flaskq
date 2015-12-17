@@ -2,9 +2,10 @@ from flask import render_template, flash, redirect, url_for, request, \
     current_app, abort, make_response
 from flask.ext.login import login_required, current_user
 from . import main
-from .forms import EditProfileForm, EditProfileAdminForm, QuestionForm
+from .forms import EditProfileForm, EditProfileAdminForm, QuestionForm, \
+    AnswerForm
 from .. import db
-from ..models import User, Role, Permission, Question
+from ..models import User, Role, Permission, Question, Answer
 from ..decorators import admin_required, permission_required
 
 
@@ -92,11 +93,28 @@ def edit_profile_admin(id):
     return render_template('edit_profile.html', form=form)
 
 
-@main.route('/question/<int:id>')
+@main.route('/question/<int:id>', methods=['GET', 'POST'])
 @login_required
 def question(id):
     question = Question.query.get_or_404(id)
-    return render_template('question.html', questions=[question])
+    form = AnswerForm()
+    if form.validate_on_submit():
+        answer = Answer(body=form.body.data,
+                        question=question,
+                        author=current_user._get_current_object())
+        db.session.add(answer)
+        flash('Your answer has been published.')
+        return redirect(url_for('.question', id=question.id, page=-1))
+    page = request.args.get('page', 1, type=int)
+    if page == -1:
+        page = (question.answers.count() - 1) // \
+            current_app.config['FLASKQ_ANSWERS_PER_PAGE'] + 1
+    pagination = question.answers.order_by(Answer.timestamp.asc()).paginate(
+        page, per_page=current_app.config['FLASKQ_ANSWERS_PER_PAGE'],
+        error_out=False)
+    answers = pagination.items
+    return render_template('question.html', questions=[question], form=form,
+                           answers=answers, pagination=pagination)
 
 
 @main.route('/edit-question/<int:id>', methods=['GET', 'POST'])
