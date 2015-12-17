@@ -218,3 +218,20 @@ def show_followed():
     resp = make_response(redirect(url_for('.index')))
     resp.set_cookie('show_followed', '1', max_age=30*24*60*60)
     return resp
+
+
+@main.route('/edit-answer/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_answer(id):
+    answer = Answer.query.get_or_404(id)
+    if current_user != answer.author and \
+            not current_user.can(Permission.ADMINISTER):
+        abort(403)
+    form = AnswerForm()
+    if form.validate_on_submit():
+        answer.body = form.body.data
+        db.session.add(answer)
+        flash('The answer has been updated.')
+        return redirect(url_for('.question', id=answer.question_id, page=-1))
+    form.body.data = answer.body
+    return render_template('edit_answer.html', form=form)

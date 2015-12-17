@@ -134,3 +134,7 @@ div.pagination {
 .answer-body h3 {
     font-size: 120%;
 }
+
+.answer-footer {
+    text-align: right;
+}

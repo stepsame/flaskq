@@ -16,6 +16,17 @@
                     {{ answer.body }}
                 {% endif %}
             </div>
+            <div class="answer-footer">
+                {% if current_user == answer.author %}
+                <a href="{{ url_for('.edit_answer', id=answer.id) }}">
+                    <span class="label label-primary">Edit</span>
+                </a>
+                {% elif current_user.is_administrator() %}
+                <a href="{{ url_for('.edit_answer', id=answer.id) }}">
+                    <span class="label label-danger">Edit [Admin]</span>
+                </a>
+                {% endif %}
+            </div>
         </div>
     </li>
     {% endfor %}
