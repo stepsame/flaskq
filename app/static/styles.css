@@ -104,3 +104,33 @@ div.pagination {
 .answer-form {
     margin: 16px 0 16px 32px;
 }
+
+.flask-pagedown-preview {
+    margin: 10px 0 10px 0;
+    border: 1px solid #e0e0e0;
+    padding: 4px;
+}
+
+.flask-pagedown-preview h1 {
+    font-size: 140%;
+}
+
+.flask-pagedown-preview h2 {
+    font-size: 130%;
+}
+
+.flask-pagedown-preview h3 {
+    font-size: 120%;
+}
+
+.answer-body h1 {
+    font-size: 140%;
+}
+
+.answer-body h2 {
+    font-size: 130%;
+}
+
+.answer-body h3 {
+    font-size: 120%;
+}

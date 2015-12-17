@@ -3,6 +3,7 @@ from wtforms import StringField, TextAreaField, SubmitField, BooleanField,\
     SelectField
 from wtforms import ValidationError
 from wtforms.validators import Required, Length, Email, Regexp
+from flask.ext.pagedown.fields import PageDownField
 from ..models import Role, User
 
 
@@ -51,5 +52,5 @@ class QuestionForm(Form):
 
 
 class AnswerForm(Form):
-    body = TextAreaField('Enter your answer', validators=[Required()])
+    body = PageDownField('Enter your answer', validators=[Required()])
     submit = SubmitField('Submit')
