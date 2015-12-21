@@ -1,5 +1,5 @@
 from flask.ext.wtf import Form
-from wtforms import StringField, TextAreaField, SubmitField, BooleanField,\
+from wtforms import StringField, TextAreaField, SubmitField, BooleanField, \
     SelectField
 from wtforms import ValidationError
 from wtforms.validators import Required, Length, Email, Regexp
@@ -54,3 +54,8 @@ class QuestionForm(Form):
 class AnswerForm(Form):
     body = PageDownField('Enter your answer', validators=[Required()])
     submit = SubmitField('Submit')
+
+
+class CommentForm(Form):
+    body = StringField('', validators=[Required()])
+    submit = SubmitField('Comment')

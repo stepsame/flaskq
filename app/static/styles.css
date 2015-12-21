@@ -138,3 +138,45 @@ div.pagination {
 .answer-footer {
     text-align: right;
 }
+
+.comment-form {
+    padding: 8px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.comments {
+    list-style-type: none;
+    padding: 0;
+    margin: 16px 0 0 0;
+}
+
+.comments .comment {
+    margin-left: 32px;
+    padding: 8px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.comments .comment:nth-child(1) {
+    border-top: 1px solid #e0e0e0;
+}
+
+.comments .comment:hover {
+    background-color: #f0f0f0;
+}
+
+.comment-date {
+    float: right;
+}
+
+.comment-author {
+    font-weight: bold;
+}
+
+.comment-thumbnail {
+    position: absolute;
+}
+
+.comment-content {
+    margin-left: 48px;
+    min-height: 48px;
+}

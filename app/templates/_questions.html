@@ -26,7 +26,13 @@
                 <a href="{{ url_for('.question', id=question.id) }}#answers">
                     <span class="label label-primary">{{ question.answers.count() }} Answers</span>
                 </a>
+                <a href="{{ url_for('.comment', id=question.id) }}" class="comments-link">
+                    <span class="label label-default">{{ question.comments.count() }} Comments</span>
+                </a>
             </div>
+        </div>
+        <div class="comment-box" style="display: none;">
+{#            {% include "_comments.html" %}#}
         </div>
     </li>
     {% endfor %}

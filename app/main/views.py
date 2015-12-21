@@ -3,9 +3,9 @@ from flask import render_template, flash, redirect, url_for, request, \
 from flask.ext.login import login_required, current_user
 from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, QuestionForm, \
-    AnswerForm
+    AnswerForm, CommentForm
 from .. import db
-from ..models import User, Role, Permission, Question, Answer
+from ..models import User, Role, Permission, Question, Answer, Comment
 from ..decorators import admin_required, permission_required
 
 
@@ -32,8 +32,10 @@ def index():
             page, per_page=current_app.config['FLASKQ_QUESTIONS_PER_PAGE'],
             error_out=False)
     questions = pagination.items
+    comment_form = CommentForm()
     return render_template('index.html', form=form, questions=questions,
-                           show_followed=show_followed, pagination=pagination)
+                           show_followed=show_followed, pagination=pagination,
+                           comment_form=comment_form)
 
 
 @main.route('/user/<username>')
@@ -108,13 +110,42 @@ def question(id):
     page = request.args.get('page', 1, type=int)
     if page == -1:
         page = (question.answers.count() - 1) // \
-            current_app.config['FLASKQ_ANSWERS_PER_PAGE'] + 1
+               current_app.config['FLASKQ_ANSWERS_PER_PAGE'] + 1
     pagination = question.answers.order_by(Answer.timestamp.asc()).paginate(
-        page, per_page=current_app.config['FLASKQ_ANSWERS_PER_PAGE'],
-        error_out=False)
+            page, per_page=current_app.config['FLASKQ_ANSWERS_PER_PAGE'],
+            error_out=False)
     answers = pagination.items
     return render_template('question.html', questions=[question], form=form,
                            answers=answers, pagination=pagination)
+
+
+@main.route('/comment/<int:id>', methods=['GET', 'POST'])
+def comment(id):
+    form = CommentForm()
+    type = request.args.get('type')
+    if type:
+        answer = Answer.query.get_or_404(id)
+        comments = answer.comments.order_by(Comment.timestamp.asc()).all()
+        if form.validate_on_submit():
+            comment = Comment(body=form.body.data,
+                              answer=answer,
+                              author=current_user._get_current_object())
+            db.session.add(comment)
+            db.session.commit()
+            comments = answer.comments.order_by(Comment.timestamp.asc()).all()
+            return render_template('_comments.html', form=form, comments=comments)
+    else:
+        question = Question.query.get_or_404(id)
+        comments = question.comments.order_by(Comment.timestamp.asc()).all()
+        if form.validate_on_submit():
+            comment = Comment(body=form.body.data,
+                              question=question,
+                              author=current_user._get_current_object())
+            db.session.add(comment)
+            db.session.commit()
+            comments = question.comments.order_by(Comment.timestamp.asc()).all()
+            return render_template('_comments.html', form=form, comments=comments)
+    return render_template('_comments.html', form=form, comments=comments)
 
 
 @main.route('/edit-question/<int:id>', methods=['GET', 'POST'])
@@ -208,7 +239,7 @@ def followed_by(username):
 @login_required
 def show_all():
     resp = make_response(redirect(url_for('.index')))
-    resp.set_cookie('show_followed', '', max_age=30*24*60*60)
+    resp.set_cookie('show_followed', '', max_age=30 * 24 * 60 * 60)
     return resp
 
 
@@ -216,7 +247,7 @@ def show_all():
 @login_required
 def show_followed():
     resp = make_response(redirect(url_for('.index')))
-    resp.set_cookie('show_followed', '1', max_age=30*24*60*60)
+    resp.set_cookie('show_followed', '1', max_age=30 * 24 * 60 * 60)
     return resp
 
 

@@ -26,8 +26,12 @@
                     <span class="label label-danger">Edit [Admin]</span>
                 </a>
                 {% endif %}
+                <a href="{{ url_for('.comment', id=answer.id, type='answer') }}" class="comments-link">
+                    <span class="label label-default">{{ answer.comments.count() }} Comments</span>
+                </a>
             </div>
         </div>
+        <div class="comment-box" style="display: none;"></div>
     </li>
     {% endfor %}
 </ul>
