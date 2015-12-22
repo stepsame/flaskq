@@ -5,14 +5,28 @@
 {% block title %}Flaskq{% endblock %}
 
 {% block page_content %}
-<div class="page-header">
-<h1>Hello, {% if current_user.is_authenticated %}{{ current_user.username }}{% else %}Stranger{% endif %}!</h1>
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Ask</h4>
+            </div>
+            <div class="modal-body">
+                {% if current_user.can(Permission.ASK) %}
+                    {{ wtf.quick_form(form) }}
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button id="question-submit" type="button" class="btn btn-primary">Submit</button>
+            </div>
+        </div>
+    </div>
 </div>
-<div>
-    {% if current_user.can(Permission.ASK) %}
-    {{ wtf.quick_form(form) }}
-    {% endif %}
-</div>
+
 <div class="question-tabs">
     <ul class="nav nav-tabs">
         <li{% if not show_followed %} class="active"{% endif %}><a href="{{ url_for('.show_all') }}">All</a></li>
@@ -32,4 +46,9 @@
 {% block scripts %}
 {{ super() }}
 <script src="{{ url_for('static', filename='comment.js') }}"></script>
+<script type="text/javascript">
+$('#question-submit').click(function(){
+    $('.modal-body form').submit();
+});
+</script>
 {% endblock %}

@@ -23,5 +23,5 @@
 {% block scripts %}
 {{ super() }}
 {{ pagedown.include_pagedown() }}
-<script src="{{ url_for('.static', filename='comment.js') }}"></script>
+<script src="{{ url_for('static', filename='comment.js') }}"></script>
 {% endblock %}
