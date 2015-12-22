@@ -33,9 +33,10 @@
         </div>
     </div>
     <div class="comment-box" style="display: none;"></div>
+    <br>
+    <h4 id="answers">{{ question.answers.count() }} Answers</h4>
 </div>
 {#{% include "_questions.html" %}#}
-<h4 id="answers">{{ question.answers.count() }} Answers</h4>
 {% if current_user.can(Permission.ANSWER) %}
 <div class="answer-form">
     {{ wtf.quick_form(form) }}

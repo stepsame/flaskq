@@ -36,10 +36,6 @@ body {
     border-bottom: 1px solid #e0e0e0;
 }
 
-.questions .question:hover {
-    background-color: #f0f0f0;
-}
-
 .question-thumbnail {
     position: absolute;
 }
@@ -55,10 +51,6 @@ body {
 
 .question-author {
     font-weight: bold;
-}
-
-.question-footer {
-    /*text-align: right;*/
 }
 
 div.pagination {
@@ -79,17 +71,13 @@ div.pagination {
 }
 
 .answers .answer {
-    margin-left: 32px;
+    /*margin-left: 32px;*/
     padding: 8px;
     border-bottom: 1px solid #e0e0e0;
 }
 
 .answers .answer:nth-child(1) {
     border-top: 1px solid #e0e0e0;
-}
-
-.answers .answer:hover {
-    background-color: #f0f0f0;
 }
 
 .answer-date {
@@ -107,10 +95,6 @@ div.pagination {
 .answer-content {
     margin-left: 48px;
     min-height: 48px;
-}
-
-.answer-form {
-    margin: 16px 0 16px 32px;
 }
 
 .flask-pagedown-preview {
@@ -143,10 +127,6 @@ div.pagination {
     font-size: 120%;
 }
 
-.answer-footer {
-    text-align: right;
-}
-
 .comment-form {
     padding: 8px;
     border-top: 1px solid #e0e0e0;
@@ -168,10 +148,6 @@ div.pagination {
     border-top: 1px solid #e0e0e0;
 }
 
-.comments .comment:hover {
-    background-color: #f0f0f0;
-}
-
 .comment-date {
     float: right;
 }
@@ -185,6 +161,12 @@ div.pagination {
 }
 
 .comment-content {
-    margin-left: 48px;
-    min-height: 48px;
+    margin-left: 33px;
+    min-height: 33px;
+}
+
+.comment-box {
+    margin-top: 10px;
+    background: #f6f6f6;
+    border-right: 1px solid #e2e2e2;
 }
