@@ -47,6 +47,7 @@
 {{ super() }}
 <script src="{{ url_for('static', filename='comment.js') }}"></script>
 <script type="text/javascript">
+$('#submit').hide();
 $('#question-submit').click(function(){
     $('.modal-body form').submit();
 });
