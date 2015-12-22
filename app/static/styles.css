@@ -1,3 +1,7 @@
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
 body {
     padding-top: 65px;
 }
