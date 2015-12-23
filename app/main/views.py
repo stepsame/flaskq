@@ -95,9 +95,25 @@ def edit_profile_admin(id):
     return render_template('edit_profile.html', form=form)
 
 
-@main.route('/question/<int:id>', methods=['GET', 'POST'])
+@main.route('/question/<int:id>')
 @login_required
 def question(id):
+    question = Question.query.get_or_404(id)
+    page = request.args.get('page', 1, type=int)
+    if page == -1:
+        page = (question.answers.count() - 1) // \
+               current_app.config['FLASKQ_ANSWERS_PER_PAGE'] + 1
+    pagination = question.answers.order_by(Answer.timestamp.asc()).paginate(
+            page, per_page=current_app.config['FLASKQ_ANSWERS_PER_PAGE'],
+            error_out=False)
+    answers = pagination.items
+    return render_template('question.html', questions=[question],
+                           answers=answers, pagination=pagination)
+
+
+@main.route('/answer/<int:id>', methods=['GET', 'POST'])
+@login_required
+def answer(id):
     question = Question.query.get_or_404(id)
     form = AnswerForm()
     if form.validate_on_submit():
@@ -107,16 +123,8 @@ def question(id):
         db.session.add(answer)
         flash('Your answer has been published.')
         return redirect(url_for('.question', id=question.id, page=-1))
-    page = request.args.get('page', 1, type=int)
-    if page == -1:
-        page = (question.answers.count() - 1) // \
-               current_app.config['FLASKQ_ANSWERS_PER_PAGE'] + 1
-    pagination = question.answers.order_by(Answer.timestamp.asc()).paginate(
-            page, per_page=current_app.config['FLASKQ_ANSWERS_PER_PAGE'],
-            error_out=False)
-    answers = pagination.items
-    return render_template('question.html', questions=[question], form=form,
-                           answers=answers, pagination=pagination)
+    return render_template('edit_answer.html', form=form, id=question.id,
+                           new=True)
 
 
 @main.route('/comment/<int:id>', methods=['GET', 'POST'])
@@ -265,4 +273,4 @@ def edit_answer(id):
         flash('The answer has been updated.')
         return redirect(url_for('.question', id=answer.question_id, page=-1))
     form.body.data = answer.body
-    return render_template('edit_answer.html', form=form)
+    return render_template('edit_answer.html', form=form, id=id)

@@ -3,12 +3,12 @@
  */
 $(".comments-link").click(function(event){
     event.preventDefault()
-    comment_box = $(this).parent().parent().next()
+    comment_box = $(this).parent().parent().siblings(".comment-box")
     comment_box.toggle()
 
     url = $(this).attr("href")
     $.get(url, function(data){
-        $(".comment-box").html(data)
+        comment_box.html(data)
     })
 })
 

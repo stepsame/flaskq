@@ -1,18 +1,15 @@
-{% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 
-{% block title %}Flaskq - Edit Answer{% endblock %}
+{% if current_user.can(Permission.ANSWER) %}
+    <div>
+        <form class="form" method="post" role="form"
+              action="{% if new %}{{ url_for('.answer', id=id) }}{% else %}{{ url_for('.edit_answer', id=id) }}{% endif %}">
+            {{ form.hidden_tag() }}
+            {{ wtf.form_errors(form, hiddens="only") }}
 
-{% block page_content %}
-<div class="page-header">
-    <h1>Edit Answer</h1>
-</div>
-<div>
-    {{ wtf.quick_form(form) }}
-</div>
-{% endblock %}
-
-{% block scripts %}
-{{ super() }}
-{{ pagedown.include_pagedown() }}
-{% endblock %}
+            {{ wtf.form_field(form.body) }}
+            {{ wtf.form_field(form.submit, button_map={'submit': 'primary'}) }}
+            <button class="answer-cancel btn btn-link">Cancel</button>
+        </form>
+    </div>
+{% endif %}

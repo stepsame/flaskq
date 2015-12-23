@@ -97,6 +97,22 @@ div.pagination {
     min-height: 48px;
 }
 
+.answer-creator {
+    margin-top: 10px;
+    padding: 10px;
+    background: #f6f6f6;
+    border: 1px solid #e2e2e2;
+
+}
+
+.answer-editor {
+    margin-left: 48px;
+    min-height: 48px;
+    background: #f6f6f6;
+    border: 1px solid #e2e2e2;
+    padding: 10px;
+}
+
 .flask-pagedown-preview {
     margin: 10px 0 10px 0;
     border: 1px solid #e0e0e0;
@@ -130,6 +146,10 @@ div.pagination {
 .comment-form {
     padding: 8px;
     border-top: 1px solid #e0e0e0;
+}
+
+.comment-form input {
+    height: 30px;
 }
 
 .comments {
@@ -168,5 +188,5 @@ div.pagination {
 .comment-box {
     margin-top: 10px;
     background: #f6f6f6;
-    border-right: 1px solid #e2e2e2;
+    border: 1px solid #e2e2e2;
 }

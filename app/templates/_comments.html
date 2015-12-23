@@ -8,7 +8,7 @@
             {{ wtf.form_errors(form, hiddens="only") }}
 
             {{ wtf.form_field(form.body, placeholder='Add a comment...') }}
-            {{ wtf.form_field(form.submit, button_map={'submit': 'primary'}) }}
+            {{ wtf.form_field(form.submit, button_map={'submit': 'primary btn-sm'}) }}
         </form>
     </div>
 {% endif %}
