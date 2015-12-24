@@ -1,5 +1,5 @@
 from flask import render_template, flash, redirect, url_for, request, \
-    current_app, abort, make_response
+    current_app, abort, make_response, jsonify
 from flask.ext.login import login_required, current_user
 from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, QuestionForm, \
@@ -274,3 +274,23 @@ def edit_answer(id):
         return redirect(url_for('.question', id=answer.question_id, page=-1))
     form.body.data = answer.body
     return render_template('edit_answer.html', form=form, id=id)
+
+
+@main.route('/vote/<int:id>')
+@login_required
+def vote(id):
+    answer = Answer.query.get_or_404(id)
+    type = request.args.get('type')
+    current_user.vote(answer, type)
+    db.session.add(current_user)
+    return jsonify(url=url_for('.unvote', id=id), upvotes=answer.upvotes)
+
+
+@main.route('/unvote/<int:id>')
+@login_required
+def unvote(id):
+    answer = Answer.query.get_or_404(id)
+    type = request.args.get('type')
+    current_user.unvote(answer, type)
+    db.session.add(current_user)
+    return jsonify(url=url_for('.vote', id=id), upvotes=answer.upvotes)

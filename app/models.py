@@ -250,6 +250,7 @@ class User(UserMixin, db.Model):
                 answer.downvotes += 1
             answer.ranking = generate_ranking(answer.upvotes, answer.downvotes)
             db.session.add(answer)
+            db.session.commit()
         elif v.type != type:
             v.type = type
             db.session.add(v)
@@ -262,6 +263,7 @@ class User(UserMixin, db.Model):
                 answer.upvotes -= 1
             answer.ranking = generate_ranking(answer.upvotes, answer.downvotes)
             db.session.add(answer)
+            db.session.commit()
 
     def unvote(self, answer, type):
         v = self.votes.filter_by(answer_id=answer.id).first()
@@ -274,6 +276,8 @@ class User(UserMixin, db.Model):
                 answer.downvotes -= 1
             answer.ranking = generate_ranking(answer.upvotes, answer.downvotes)
             db.session.add(answer)
+            db.session.commit()
+
 
     def is_voted(self, answer):
         vote = self.votes.filter_by(answer_id=answer.id).first()
