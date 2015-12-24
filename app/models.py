@@ -1,5 +1,6 @@
 from datetime import datetime
 import hashlib
+import math
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from werkzeug.security import generate_password_hash, check_password_hash
 from markdown import markdown
@@ -86,7 +87,8 @@ class User(UserMixin, db.Model):
                                 lazy='dynamic',
                                 cascade='all, delete-orphan')
     answers = db.relationship('Answer', backref='author', lazy='dynamic')
-    comments= db.relationship('Comment', backref='author', lazy='dynamic')
+    comments = db.relationship('Comment', backref='author', lazy='dynamic')
+    votes = db.relationship('Vote', lazy='dynamic', cascade='all, delete-orphan')
 
     @staticmethod
     def generate_fake(count=100):
@@ -235,6 +237,50 @@ class User(UserMixin, db.Model):
         return self.followers.filter_by(
                 follower_id=user.id).first() is not None
 
+    def vote(self, answer, type):
+        v = self.is_voted(answer)
+        if not v:
+            v = Vote(voter_id=self.id, answer_id=answer.id,
+                     type=type)
+            db.session.add(v)
+            # change answer votes
+            if type == 'up':
+                answer.upvotes += 1
+            else:
+                answer.downvotes += 1
+            answer.ranking = generate_ranking(answer.upvotes, answer.downvotes)
+            db.session.add(answer)
+        elif v.type != type:
+            v.type = type
+            db.session.add(v)
+            # change answer votes
+            if type == 'up':
+                answer.upvotes += 1
+                answer.downvotes -= 1
+            else:
+                answer.downvotes += 1
+                answer.upvotes -= 1
+            answer.ranking = generate_ranking(answer.upvotes, answer.downvotes)
+            db.session.add(answer)
+
+    def unvote(self, answer, type):
+        v = self.votes.filter_by(answer_id=answer.id).first()
+        if v:
+            db.session.delete(v)
+            # change answer votes
+            if type == 'up':
+                answer.upvotes -= 1
+            else:
+                answer.downvotes -= 1
+            answer.ranking = generate_ranking(answer.upvotes, answer.downvotes)
+            db.session.add(answer)
+
+    def is_voted(self, answer):
+        vote = self.votes.filter_by(answer_id=answer.id).first()
+        if vote is None:
+            return False
+        return vote
+
     @property
     def followed_questions(self):
         return Question.query.join(Follow, Follow.followed_id == Question.author_id) \
@@ -293,10 +339,12 @@ class Answer(db.Model):
     body = db.Column(db.Text)
     body_html = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    disabled = db.Column(db.Boolean)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     question_id = db.Column(db.Integer, db.ForeignKey('questions.id'))
     comments = db.relationship('Comment', backref='answer', lazy='dynamic')
+    upvotes = db.Column(db.Integer, default=0)
+    downvotes = db.Column(db.Integer, default=0)
+    ranking = db.Column(db.Float, index=True, default=0)
 
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
@@ -304,11 +352,25 @@ class Answer(db.Model):
                         'em', 'i', 'img', 'li', 'ol', 'pre', 'strong', 'ul',
                         'h1', 'h2', 'h3', 'p']
         allowed_attrs = {'*': ['class'],
-                        'a': ['href', 'rel'],
-                        'img': ['src', 'alt']}
+                         'a': ['href', 'rel'],
+                         'img': ['src', 'alt']}
         target.body_html = bleach.linkify(bleach.clean(
                 markdown(value, output_format='html'),
                 tags=allowed_tags, attributes=allowed_attrs, strip=True))
+
+
+def generate_ranking(upvotes, downvotes):
+    n = upvotes + downvotes
+    if n == 0:
+        return 0
+    p = upvotes / n
+    z = 1.96
+    denominator = 1 + (1 / n) * z ** 2
+    radicand = p / n * (1 - p) + z ** 2 / (4 * n ** 2)
+    numerator = p + z ** 2 / (2 * n)
+    numerator -= z * math.sqrt(radicand)
+    ranking = numerator / denominator
+    return ranking
 
 
 db.event.listen(Answer.body, 'set', Answer.on_changed_body)
@@ -323,3 +385,11 @@ class Comment(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     question_id = db.Column(db.Integer, db.ForeignKey('questions.id'))
     answer_id = db.Column(db.Integer, db.ForeignKey('answers.id'))
+
+
+class Vote(db.Model):
+    __tablename__ = 'votes'
+    voter_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    answer_id = db.Column(db.Integer, db.ForeignKey('answers.id'), primary_key=True)
+    type = db.Column(db.Enum("up", "down", name="vote_type"))
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)

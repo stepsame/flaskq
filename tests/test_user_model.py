@@ -2,7 +2,8 @@ import time
 import unittest
 from datetime import datetime
 from app import create_app, db
-from app.models import User, Role, Permission, AnonymousUser, Follow
+from app.models import User, Role, Permission, AnonymousUser, Follow, Answer,\
+    Vote
 
 
 class UserModelTestCase(unittest.TestCase):
@@ -187,3 +188,45 @@ class UserModelTestCase(unittest.TestCase):
         db.session.delete(u2)
         db.session.commit()
         self.assertTrue(Follow.query.count() == 1)
+
+    def test_vote(self):
+        u = User(email='john@example.com', password='cat')
+        a = Answer(body='This a test answer.')
+        db.session.add(u)
+        db.session.add(a)
+        db.session.commit()
+        self.assertFalse(u.is_voted(a))
+        timestamp_before = datetime.utcnow()
+        u.vote(a, 'up')
+        db.session.add(u)
+        db.session.commit()
+        timestamp_after = datetime.utcnow()
+        self.assertTrue(u.is_voted(a).type == 'up')
+        self.assertTrue(u.votes.count() == 1)
+        self.assertTrue(a.upvotes == 1)
+        self.assertTrue(a.downvotes == 0)
+        self.assertTrue(0.206 < a.ranking < 0.207)
+        v = u.votes.all()[-1]
+        self.assertTrue(v.voter_id == u.id)
+        self.assertTrue(timestamp_before <= v.timestamp <= timestamp_after)
+        u.vote(a, 'down')
+        db.session.add(u)
+        db.session.commit()
+        self.assertTrue(u.is_voted(a).type == 'down')
+        self.assertTrue(u.votes.count() == 1)
+        self.assertTrue(a.upvotes == 0)
+        self.assertTrue(a.downvotes == 1)
+        self.assertTrue(a.ranking == 0)
+        self.assertTrue(Vote.query.count() == 1)
+        u.unvote(a, 'down')
+        db.session.add(u)
+        db.session.commit()
+        self.assertTrue(u.votes.count() == 0)
+        self.assertFalse(u.is_voted(a))
+        self.assertTrue(Vote.query.count() == 0)
+        u.vote(a, 'up')
+        db.session.add(u)
+        db.session.commit()
+        db.session.delete(u)
+        db.session.commit()
+        self.assertTrue(Vote.query.count() == 0)
