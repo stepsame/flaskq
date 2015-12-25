@@ -17,6 +17,7 @@
                 {% endif %}
             </div>
             <div class="answer-footer">
+                {{ answer.ranking }}
                 {% if current_user.is_voted(answer).type == 'up' %}
                     <a class="upvote btn btn-info btn-sm active" href="{{ url_for('.unvote', id=answer.id) }}">Upvoted
                 {% else %}
