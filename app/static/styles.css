@@ -15,42 +15,18 @@ body {
     margin-left: 280px;
 }
 
-.question-tabs {
+.activity-tabs {
     margin-top: 16px;
 }
 
-.questions {
+.activities {
     list-style-type: none;
     padding: 0;
-    margin: 16px 0 0 0;
-    border-top: 1px solid #e0e0e0;
 }
 
-.question-tabs .questions{
-    margin: 0;
-    border-top: none;
-}
-
-.questions .question {
+.activities .activity {
     padding: 8px;
     border-bottom: 1px solid #e0e0e0;
-}
-
-.question-thumbnail {
-    position: absolute;
-}
-
-.question-content {
-    margin-left: 48px;
-    min-height: 48px;
-}
-
-.question-date {
-    float: right;
-}
-
-.question-author {
-    font-weight: bold;
 }
 
 div.pagination {
@@ -189,4 +165,16 @@ div.pagination {
     margin-top: 10px;
     background: #f6f6f6;
     border: 1px solid #e2e2e2;
+}
+
+.activity-header {
+    margin-bottom: 4px;
+    color: #999;
+    font-size: 13px;
+}
+
+.question-link {
+    font-size: 19px;
+    color: #333;
+    font-weight: bold;
 }

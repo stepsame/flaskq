@@ -6,8 +6,15 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from markdown import markdown
 import bleach
 from flask import current_app, request
-from flask.ext.login import UserMixin, AnonymousUserMixin
+from flask.ext.login import UserMixin, AnonymousUserMixin, current_user
 from . import db, login_manager
+import sqlalchemy as sa
+from sqlalchemy_continuum import make_versioned
+from sqlalchemy_continuum.plugins import ActivityPlugin, FlaskPlugin
+
+
+activity_plugin = ActivityPlugin()
+make_versioned(plugins=[activity_plugin, FlaskPlugin()])
 
 
 class Permission:
@@ -112,13 +119,6 @@ class User(UserMixin, db.Model):
             except IntegrityError:
                 db.session.rollback()
 
-    @staticmethod
-    def add_self_follows():
-        for user in User.query.all():
-            if not user.is_following(user):
-                user.follow(user)
-                db.session.add(user)
-                db.session.commit()
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -130,7 +130,6 @@ class User(UserMixin, db.Model):
         if self.email is not None and self.avatar_hash is None:
             self.avatar_hash = hashlib.md5(
                     self.email.encode('utf-8')).hexdigest()
-        self.followed.append(Follow(followed=self))
 
     @property
     def password(self):
@@ -246,6 +245,11 @@ class User(UserMixin, db.Model):
             # change answer votes
             if type == 'up':
                 answer.upvotes += 1
+                # activity
+                db.session.flush()
+                upvote_activity = Activity(verb='upvoted', object=answer,
+                                  actor_id=current_user.id, timestamp=v.timestamp)
+                db.session.add(upvote_activity)
             else:
                 answer.downvotes += 1
             answer.ranking = generate_ranking(answer.upvotes, answer.downvotes)
@@ -278,7 +282,6 @@ class User(UserMixin, db.Model):
             db.session.add(answer)
             db.session.commit()
 
-
     def is_voted(self, answer):
         vote = self.votes.filter_by(answer_id=answer.id).first()
         if vote is None:
@@ -288,6 +291,11 @@ class User(UserMixin, db.Model):
     @property
     def followed_questions(self):
         return Question.query.join(Follow, Follow.followed_id == Question.author_id) \
+            .filter(Follow.follower_id == self.id)
+
+    @property
+    def followed_activities(self):
+        return Activity.query.join(Follow, Follow.followed_id == Activity.actor_id) \
             .filter(Follow.follower_id == self.id)
 
     def __repr__(self):
@@ -311,6 +319,7 @@ login_manager.anonymous_user = AnonymousUser
 
 
 class Question(db.Model):
+    __versioned__ = {}
     __tablename__ = 'questions'
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.String(64))
@@ -338,6 +347,7 @@ class Question(db.Model):
 
 
 class Answer(db.Model):
+    __versioned__ = {}
     __tablename__ = 'answers'
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.Text)
@@ -392,8 +402,14 @@ class Comment(db.Model):
 
 
 class Vote(db.Model):
+    __versioned__ = {}
     __tablename__ = 'votes'
     voter_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
     answer_id = db.Column(db.Integer, db.ForeignKey('answers.id'), primary_key=True)
     type = db.Column(db.Enum("up", "down", name="vote_type"))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+
+
+# after you have defined all your models, call configure_mappers:
+sa.orm.configure_mappers()
+Activity = activity_plugin.activity_cls

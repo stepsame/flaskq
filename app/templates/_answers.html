@@ -1,4 +1,4 @@
-<ul class="answers" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<ul class="answers">
     {% for answer in answers %}
     <li class="answer">
         <div class="answer-thumbnail">
@@ -17,7 +17,6 @@
                 {% endif %}
             </div>
             <div class="answer-footer">
-                {{ answer.ranking }}
                 {% if current_user.is_voted(answer).type == 'up' %}
                     <a class="upvote btn btn-info btn-sm active" href="{{ url_for('.unvote', id=answer.id) }}">Upvoted
                 {% else %}

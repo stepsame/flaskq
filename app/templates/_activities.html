@@ -1,0 +1,63 @@
+<ul class="activities">
+    {% for activity in activities %}
+    <li class="activity">
+        <div class="activity-header">
+            <a href="{{ url_for('.user', username=activity.actor.username) }}">
+                <img class="img-circle" src="{{ activity.actor.gravatar(size=18) }}"> {{ activity.actor.username }}
+            </a>
+            <span> {{ activity.verb }} this • {{ moment(activity.timestamp).fromNow() }}</span>
+        </div>
+        <div>
+            {% if activity.object_type == 'Question' %}
+                <a class="question-link" href="{{ url_for('.question', id=activity.object.id) }}">{{ activity.object.body }}</a>
+            {% else %}
+                <a class="question-link" href="{{ url_for('.question', id=activity.object.question.id) }}">{{ activity.object.question.body }}</a>
+            {% endif %}
+        </div>
+        {% if activity.object_type == 'Answer' %}
+        <div class="answer-thumbnail">
+            <a href="{{ url_for('.user', username=activity.object.author.username) }}">
+                <img class="img-circle profile-thumbnail" src="{{ activity.object.author.gravatar(size=40) }}">
+            </a>
+        </div>
+        <div class="answer-content">
+            <div class="answer-author"><a href="{{ url_for('.user', username=activity.object.author.username) }}">{{ activity.object.author.username }}</a></div>
+            <div class="answer-body">
+                {% if activity.object.body_html %}
+                    {{ activity.object.body_html | safe }}
+                {% else %}
+                    {{ activity.object.body }}
+                {% endif %}
+            </div>
+            <div class="answer-footer">
+                {% if current_user.is_voted(activity.object).type == 'up' %}
+                    <a class="upvote btn btn-info btn-sm active" href="{{ url_for('.unvote', id=activity.object.id) }}">Upvoted
+                {% else %}
+                    <a class="upvote btn btn-info btn-sm" href="{{ url_for('.vote', id=activity.object.id) }}">Upvote
+                {% endif %} | {{ activity.object.upvotes }}</a>
+                {% if current_user.is_voted(activity.object).type == 'down' %}
+                    <a class="downvote btn btn-link btn-sm active" href="{{ url_for('.unvote', id=activity.object.id) }}">Downvoted
+                {% else %}
+                    <a class="downvote btn btn-link btn-sm" href="{{ url_for('.vote', id=activity.object.id) }}">Downvote
+                {% endif %}</a>
+                {% if current_user == activity.object.author %}
+                <a class="answer-edit" href="{{ url_for('.edit_answer', id=activity.object.id) }}">
+                    <span class="label label-primary">Edit</span>
+                </a>
+                {% elif current_user.is_administrator() %}
+                <a class="answer-edit" href="{{ url_for('.edit_answer', id=activity.object.id) }}">
+                    <span class="label label-danger">Edit [Admin]</span>
+                </a>
+                {% endif %}
+                <a href="{{ url_for('.comment', id=activity.object.id, type='answer') }}" class="comments-link">
+                    <span class="label label-default">{{ activity.object.comments.count() }} Comments</span>
+                </a>
+            </div>
+        </div>
+        <div class="answer-editor" style="display: none;"></div>
+        <div class="comment-box" style="display: none;"></div>
+        {% endif %}
+
+    </li>
+    {% endfor %}
+</ul>

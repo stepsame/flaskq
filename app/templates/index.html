@@ -26,15 +26,14 @@
         </div>
     </div>
 </div>
-
-<div class="question-tabs">
+<div class="acvitity-tabs">
     <ul class="nav nav-tabs">
         <li{% if not show_followed %} class="active"{% endif %}><a href="{{ url_for('.show_all') }}">All</a></li>
         {% if current_user.is_authenticated %}
-        <li{% if show_followed %} class="active"{% endif %}><a href="{{ url_for('.show_followed') }}">Followers</a> </li>
+        <li{% if show_followed %} class="active"{% endif %}><a href="{{ url_for('.show_followed') }}">Followers</a></li>
         {% endif %}
     </ul>
-    {% include "_questions.html" %}
+    {% include "_activities.html" %}
 </div>
 {% if pagination %}
 <div class="pagination">
@@ -46,6 +45,9 @@
 {% block scripts %}
 {{ super() }}
 <script src="{{ url_for('static', filename='comment.js') }}"></script>
+<script src="{{ url_for('static', filename='answer.js') }}"></script>
+<script src="{{ url_for('static', filename='vote.js') }}"></script>
+<script src="{{ url_for('static', filename='more.js') }}"></script>
 <script type="text/javascript">
 $('#submit').hide()
 $('#question-submit').click(function(){

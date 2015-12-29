@@ -5,7 +5,8 @@ from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, QuestionForm, \
     AnswerForm, CommentForm
 from .. import db
-from ..models import User, Role, Permission, Question, Answer, Comment
+from ..models import User, Role, Permission, Question, Answer, Comment, \
+    Activity
 from ..decorators import admin_required, permission_required
 
 
@@ -19,21 +20,26 @@ def index():
                             detail=form.detail.data,
                             author=current_user._get_current_object())
         db.session.add(question)
+        db.session.flush()
+        question_activity = Activity(verb='asked', object=question,
+                                  actor_id=current_user.id,
+                                     timestamp=question.timestamp)
+        db.session.add(question_activity)
         return redirect(url_for('.index'))
     page = request.args.get('page', 1, type=int)
     show_followed = False
     if current_user.is_authenticated:
         show_followed = bool(request.cookies.get('show_followed', ''))
     if show_followed:
-        query = current_user.followed_questions
+        query = current_user.followed_activities
     else:
-        query = Question.query
-    pagination = query.order_by(Question.timestamp.desc()).paginate(
-            page, per_page=current_app.config['FLASKQ_QUESTIONS_PER_PAGE'],
+        query = Activity.query
+    pagination = query.order_by(Activity.timestamp.desc()).paginate(
+            page, per_page=current_app.config['FLASKQ_ACTIVITIES_PER_PAGE'],
             error_out=False)
-    questions = pagination.items
+    activities = pagination.items
     comment_form = CommentForm()
-    return render_template('index.html', form=form, questions=questions,
+    return render_template('index.html', form=form, activities=activities,
                            show_followed=show_followed, pagination=pagination,
                            comment_form=comment_form)
 
@@ -118,6 +124,11 @@ def answer(id):
                         question=question,
                         author=current_user._get_current_object())
         db.session.add(answer)
+        db.session.flush()
+        answer_activity = Activity(verb='wrote', object=answer,
+                                  actor_id=current_user.id,
+                                   timestamp=answer.timestamp)
+        db.session.add(answer_activity)
         flash('Your answer has been published.')
         return redirect(url_for('.question', id=question.id))
     return render_template('edit_answer.html', form=form, id=question.id,
@@ -240,22 +251,6 @@ def followed_by(username):
                            follows=follows)
 
 
-@main.route('/all')
-@login_required
-def show_all():
-    resp = make_response(redirect(url_for('.index')))
-    resp.set_cookie('show_followed', '', max_age=30 * 24 * 60 * 60)
-    return resp
-
-
-@main.route('/followed')
-@login_required
-def show_followed():
-    resp = make_response(redirect(url_for('.index')))
-    resp.set_cookie('show_followed', '1', max_age=30 * 24 * 60 * 60)
-    return resp
-
-
 @main.route('/edit-answer/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit_answer(id):
@@ -271,6 +266,22 @@ def edit_answer(id):
         return redirect(url_for('.question', id=answer.question_id))
     form.body.data = answer.body
     return render_template('edit_answer.html', form=form, id=id)
+
+
+@main.route('/all')
+@login_required
+def show_all():
+    resp = make_response(redirect(url_for('.index')))
+    resp.set_cookie('show_followed', '', max_age=30*24*60*60)
+    return resp
+
+
+@main.route('/followed')
+@login_required
+def show_followed():
+    resp = make_response(redirect(url_for('.index')))
+    resp.set_cookie('show_followed', '1', max_age=30*24*60*60)
+    return resp
 
 
 @main.route('/vote/<int:id>')
