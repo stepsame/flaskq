@@ -16,12 +16,8 @@
             </div>
             <div class="modal-body">
                 {% if current_user.can(Permission.ASK) %}
-                    {{ wtf.quick_form(form) }}
+                    {{ wtf.quick_form(form, button_map={'submit': 'primary'}) }}
                 {% endif %}
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button id="question-submit" type="button" class="btn btn-primary">Submit</button>
             </div>
         </div>
     </div>
@@ -48,10 +44,5 @@
 <script src="{{ url_for('static', filename='answer.js') }}"></script>
 <script src="{{ url_for('static', filename='vote.js') }}"></script>
 <script src="{{ url_for('static', filename='more.js') }}"></script>
-<script type="text/javascript">
-$('#submit').hide()
-$('#question-submit').click(function(){
-    $('.modal-body form').submit()
-})
-</script>
+
 {% endblock %}
