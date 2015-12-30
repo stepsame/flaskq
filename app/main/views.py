@@ -49,12 +49,12 @@ def index():
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
     page = request.args.get('page', 1, type=int)
-    pagination = user.questions.order_by(Question.timestamp.desc()).paginate(
-            page=page, per_page=current_app.config['FLASKQ_QUESTIONS_PER_PAGE'],
+    pagination = user.answers.order_by(Answer.timestamp.desc()).paginate(
+            page=page, per_page=current_app.config['FLASKQ_ANSWERS_PER_PAGE'],
             error_out=False)
-    questions = pagination.items
-    return render_template('user.html', user=user, questions=questions,
-                           pagination=pagination)
+    answers = pagination.items
+    return render_template('user.html', user=user, answers=answers,
+                           pagination=pagination, profile=True)
 
 
 @main.route('/edit-profile', methods=['GET', 'POST'])

@@ -1,6 +1,11 @@
 <ul class="answers">
     {% for answer in answers %}
     <li class="answer">
+        {% if profile %}
+        <div>
+            <a class="question-link" href="{{ url_for('.question', id=answer.question.id) }}">{{ answer.question.body }}</a>
+        </div>
+        {% endif %}
         <div class="answer-thumbnail">
             <a href="{{ url_for('.user', username=answer.author.username) }}">
                 <img class="img-circle profile-thumbnail" src="{{ answer.author.gravatar(size=40) }}">

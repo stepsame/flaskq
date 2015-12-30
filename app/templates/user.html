@@ -46,11 +46,18 @@
         </p>
     </div>
 </div>
-<h3>Questions by {{ user.username }}</h3>
-{% include "_questions.html" %}
+<h3>Answers by {{ user.username }}</h3>
+{% include "_answers.html" %}
 {% if pagination %}
 <div class="pagination">
     {{ macros.pagination_widget(pagination, '.user', username=user.username) }}
 </div>
 {% endif %}
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='comment.js') }}"></script>
+<script src="{{ url_for('static', filename='vote.js') }}"></script>
+<script src="{{ url_for('static', filename='more.js') }}"></script>
 {% endblock %}
