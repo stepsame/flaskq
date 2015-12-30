@@ -1,0 +1,38 @@
+<div class="user-popover">
+    <div>
+        <a href="{{ url_for('.user', username=user.username) }}">
+            <img class="img-circle profile-thumbnail" src="{{ user.gravatar(size=40) }}">
+        </a>
+    </div>
+    <div class="answer-content">
+        <div class="answer-author"><a href="{{ url_for('.user', username=user.username) }}">{{ user.username }}</a></div>
+        <div>
+            {% if user.about_me %}
+                {{ user.about_me }}
+            {% endif %}
+        </div>
+    </div>
+    <div class="user-status">
+        <div class="status">
+            <span class="count">{{ user.questions.count() }}</span>
+            <div>Questions</div>
+        </div>
+        <div class="status">
+            <span class="count">{{ user.answers.count() }}</span>
+            <div>Answers</div>
+        </div>
+        <div class="status">
+            <span class="count">{{ user.followers.count() }}</span>
+            <div>Followers</div>
+        </div>
+    </div>
+    {% if current_user.can(Permission.FOLLOW) and user != current_user %}
+        <div class="user-footer">
+            {% if not current_user.is_following(user) %}
+            <a href="{{ url_for('.follow', username=user.username) }}" class="btn bg-primary">Follow</a>
+            {% else %}
+            <a href="{{ url_for('.unfollow', username=user.username) }}" class="btn btn-default active">Unfollow</a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>

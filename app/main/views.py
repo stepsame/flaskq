@@ -302,3 +302,10 @@ def unvote(id):
     current_user.unvote(answer, type)
     db.session.add(current_user)
     return jsonify(url=url_for('.vote', id=id), upvotes=answer.upvotes)
+
+
+@main.route('/popover/<username>')
+@login_required
+def popover(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    return render_template('_popover.html', user=user)

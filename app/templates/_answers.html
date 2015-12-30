@@ -8,7 +8,11 @@
         </div>
         <div class="answer-content">
             <div class="answer-date">{{ moment(answer.timestamp).fromNow() }}</div>
-            <div class="answer-author"><a href="{{ url_for('.user', username=answer.author.username) }}">{{ answer.author.username }}</a> </div>
+            <div class="answer-author">
+                <a href="{{ url_for('.user', username=answer.author.username) }}">
+                    <span data-poload="{{ url_for('.popover', username=answer.author.username) }}">{{ answer.author.username }}</span>
+                </a>
+            </div>
             <div class="answer-body">
                 {% if answer.body_html %}
                     {{ answer.body_html | safe }}

@@ -178,3 +178,39 @@ div.pagination {
     color: #333;
     font-weight: bold;
 }
+
+.popover {
+    min-width: 20%;
+}
+
+.popover-content {
+    padding: 0;
+}
+
+.user-popover {
+    margin-top: 8px;
+}
+
+.user-status {
+    margin: 8px;
+    padding: 8px;
+    background-color: #fcfcfc;
+    border: 1px solid #e2e2e2;
+}
+
+.status {
+    display: inline-block;
+    border-right: 1px solid #e2e2e2;
+    padding: 8px;
+    text-align: center;
+}
+
+.status:last-child {
+    border-right: none;
+}
+
+.user-footer {
+    border-top: 1px solid #e2e2e2;
+    background: #f6f6f6;
+    padding: 8px;
+}

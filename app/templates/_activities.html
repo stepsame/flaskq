@@ -3,7 +3,8 @@
     <li class="activity">
         <div class="activity-header">
             <a href="{{ url_for('.user', username=activity.actor.username) }}">
-                <img class="img-circle" src="{{ activity.actor.gravatar(size=18) }}"> {{ activity.actor.username }}
+                <img class="img-circle" src="{{ activity.actor.gravatar(size=18) }}">
+                <span data-poload="{{ url_for('.popover', username=activity.actor.username) }}"> {{ activity.actor.username }}</span>
             </a>
             <span> {{ activity.verb }} this • {{ moment(activity.timestamp).fromNow() }}</span>
         </div>
@@ -21,7 +22,11 @@
             </a>
         </div>
         <div class="answer-content">
-            <div class="answer-author"><a href="{{ url_for('.user', username=activity.object.author.username) }}">{{ activity.object.author.username }}</a></div>
+            <div class="answer-author">
+                <a href="{{ url_for('.user', username=activity.object.author.username) }}">
+                    <span data-poload="{{ url_for('.popover', username=activity.object.author.username) }}">{{ activity.object.author.username }}</span>
+                </a>
+            </div>
             <div class="answer-body">
                 {% if activity.object.body_html %}
                     {{ activity.object.body_html | safe }}
