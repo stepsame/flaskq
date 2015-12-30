@@ -288,6 +288,9 @@ class User(UserMixin, db.Model):
             return False
         return vote
 
+    def is_answered(self, question):
+        return Answer.query.filter_by(question_id=question.id, author_id=self.id).first()
+
     @property
     def followed_questions(self):
         return Question.query.join(Follow, Follow.followed_id == Question.author_id) \
