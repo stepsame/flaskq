@@ -1,29 +1,47 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 
+{% block body_attribs %}{{ super() }} class="login"{% endblock %}
+
 {% block title %}Flaskq - Login{% endblock %}
 
 {% block navbar %}{% endblock %}
 
 {% block page_content %}
-<div class="page-header">
-    <h1>Login</h1>
+<div class="page-header logo">
+    <h1>Flaskq</h1>
+    <h2>The best answer to any question</h2>
 </div>
-<div class="col-md-4">
-    {{ wtf.quick_form(register_form, action="register") }}
+<div class="form-signup" style="display: none">
+    <form class="form" method="post" role="form" action="register">
+      {{ form.hidden_tag() }}
+      {{ wtf.form_errors(register_form, hiddens="only") }}
+
+      {{ wtf.form_field(register_form.email, placeholder='Email address') }}
+      {{ wtf.form_field(register_form.username, placeholder='Username') }}
+      {{ wtf.form_field(register_form.password, placeholder='Password') }}
+      {{ wtf.form_field(register_form.password2, placeholder='Confirm password') }}
+      {{ wtf.form_field(register_form.submit, button_map={'submit': 'primary btn-block'}) }}
+    </form>
 </div>
-<div class="col-md-4">
-    <form class="form form-horizontal" method="post" role="form">
+<div class="form-signin">
+    <form class="form" method="post" role="form">
       {{ form.hidden_tag() }}
       {{ wtf.form_errors(form, hiddens="only") }}
 
-      {{ wtf.form_field(form.email, placeholder='Email') }}
-      {{ wtf.form_field(form.remember_me) }}
+      {{ wtf.form_field(form.email, placeholder='Email address') }}
       {{ wtf.form_field(form.password, placeholder='Password') }}
-      {{ wtf.form_field(form.submit) }}
+      {{ wtf.form_field(form.remember_me) }}
+      {{ wtf.form_field(form.submit, button_map={'submit': 'primary btn-block'}) }}
     </form>
     <br>
     <p>Forget your password?<a href="{{ url_for('auth.password_reset_request') }}">Click here to reset it</a>. </p>
-    <p>New User?<a href="#">Click here to register</a> </p>
+    <p>New User?<a id="register-link" href="#">Click here to register</a> </p>
 </div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='login.js') }}"></script>
 {% endblock %}

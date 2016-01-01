@@ -1,3 +1,114 @@
+body.login {
+    /* Background pattern from subtlepatterns.com */
+    background-image: url("new_year_background.png");
+}
+
+.logo {
+    text-align: center;
+}
+
+.logo h1{
+    font-family: 'Montserrat', Arial, serif;
+    font-weight: 700;
+    font-size: 300%;
+    color: #a62100;
+}
+
+.logo h2 {
+    font-weight: 400;
+    font-family: Georgia,Times,"Times New Roman",serif;
+    color: #666;
+    font-size: 19px;
+}
+
+.form-signin {
+    max-width: 330px;
+    padding: 15px;
+    margin: 0 auto;
+}
+
+.form-signin .form-group {
+    margin-bottom: 0;
+}
+
+.form-signin .control-label {
+    display: none;
+}
+
+.form-signin .form-control {
+  position: relative;
+  height: auto;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  padding: 10px;
+  font-size: 16px;
+}
+
+.form-signin input[name="email"] {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.form-signin input[name="password"] {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.form-signup {
+    max-width: 330px;
+    padding: 15px;
+    margin: 0 auto;
+}
+
+.form-signup .form-group {
+    margin-bottom: 0;
+}
+
+.form-signup .control-label {
+    display: none;
+}
+
+.form-signup .form-control {
+  position: relative;
+  height: auto;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  padding: 10px;
+  font-size: 16px;
+}
+
+.form-signup input[name="email"] {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.form-signup input[name="username"] {
+  margin-bottom: -1px;
+  border-radius: 0;
+}
+
+.form-signup input[name="password"] {
+  margin-bottom: -1px;
+  border-radius: 0;
+}
+
+.form-signup input[name="password2"] {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.navbar-default .navbar-brand {
+    font-family: 'Montserrat', Arial, serif;
+    font-weight: 700;
+    color: #a62100;
+}
+
 .dropdown:hover .dropdown-menu {
     display: block;
 }
