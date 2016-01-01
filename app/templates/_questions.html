@@ -1,37 +1,23 @@
+{% if questions %}
 <ul class="questions">
     {% for question in questions %}
     <li class="question">
-        <div class="question-thumbnail">
-            <a href="{{ url_for('.user', username=question.author.username) }}">
-                <img class="img-circle profile-thumbnail" src="{{ question.author.gravatar(size=40) }}">
-            </a>
-        </div>
         <div class="question-content">
-            <div class="question-date">{{ moment(question.timestamp).fromNow() }}</div>
-            <div class="question-author"><a href="{{ url_for('.user', username=question.author.username) }}">{{ question.author.username }}</a> </div>
-            <div class="question-body">{{ question.body }}</div>
-            <div class="question-footer">
-                {% if current_user == question.author %}
-                <a href="{{ url_for('.edit_question', id=question.id) }}">
-                    <span class="label label-primary">Edit</span>
-                </a>
-                {% elif current_user.is_administrator() %}
-                <a href="{{ url_for('.edit_question', id=question.id) }}">
-                    <span class="label label-danger">Edit [Admin]</span>
-                </a>
-                {% endif %}
-                <a href="{{ url_for('.question', id=question.id) }}">
-                    <span class="label label-default">Permalink</span>
-                </a>
-                <a href="{{ url_for('.question', id=question.id) }}#answers">
-                    <span class="label label-primary">{{ question.answers.count() }} Answers</span>
-                </a>
-                <a href="{{ url_for('.comment', id=question.id) }}" class="comments-link">
-                    <span class="label label-default">{{ question.comments.count() }} Comments</span>
-                </a>
+            <div class="question-body">
+                <a class="question-link" href="{{ url_for('.question', id=question.id) }}">{{ question.body }}</a>
             </div>
+
+            {% if question.answers.count() > 0 %}
+            <div class="answer">
+                <div class="answer-count">Answer 1 of {{ question.answers.count() }} • <a href="{{ url_for('.question', id=question.id) }}#answers">View All</a></div>
+                <div class="answer-author">{{ question.answers[0].author.username }}</div>
+                <div class="answer-body">{{ question.answers[0].body }}</div>
+            </div>
+            {% endif %}
         </div>
-        <div class="comment-box" style="display: none;"></div>
     </li>
     {% endfor %}
 </ul>
+{% else %}
+<div>No results found for '{{ q }}'</div>
+{% endif %}

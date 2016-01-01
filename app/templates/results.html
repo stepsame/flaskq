@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Flaskq - Results{% endblock %}
+
+{% block page_content %}
+    <div class="page-header">
+        <h4>Results for <strong>{{ q }}</strong></h4>
+    </div>
+    {% include "_questions.html" %}
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='more.js') }}"></script>
+{% endblock %}

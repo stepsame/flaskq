@@ -309,3 +309,10 @@ def unvote(id):
 def popover(username):
     user = User.query.filter_by(username=username).first_or_404()
     return render_template('_popover.html', user=user)
+
+@main.route('/search')
+@login_required
+def search():
+    q = request.args.get("q")
+    questions = Question.query.filter(Question.body.like("%"+q+"%")).all()
+    return render_template('results.html', questions=questions, q=q)
