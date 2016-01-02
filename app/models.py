@@ -249,7 +249,7 @@ class User(UserMixin, db.Model):
                 # activity
                 db.session.flush()
                 upvote_activity = Activity(verb='upvoted', object=answer,
-                                  actor_id=current_user.id, timestamp=v.timestamp)
+                                  actor_id=self.id, timestamp=v.timestamp)
                 db.session.add(upvote_activity)
             else:
                 answer.downvotes += 1

@@ -144,7 +144,7 @@ class UserModelTestCase(unittest.TestCase):
             gravatar_retro = u.gravatar(default='retro')
         with self.app.test_request_context('/', base_url='https://example.com'):
             gravatar_ssl = u.gravatar()
-        self.assertTrue('http://www.gravatar.com/avatar/' +
+        self.assertTrue('http://cn.gravatar.com/avatar/' +
                         'd4c74594d841139328695756648b6bd6' in gravatar)
         self.assertTrue('s=256' in gravatar_256)
         self.assertTrue('r=pg' in gravatar_pg)

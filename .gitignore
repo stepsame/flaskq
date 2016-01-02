@@ -4,5 +4,6 @@ __pycache__/
 # Distribution / packaging
 venv/
 .idea/
+tmp/
 
 *.sqlite
