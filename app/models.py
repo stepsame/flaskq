@@ -5,9 +5,10 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from werkzeug.security import generate_password_hash, check_password_hash
 from markdown import markdown
 import bleach
-from flask import current_app, request
+from flask import current_app, request, url_for
 from flask.ext.login import UserMixin, AnonymousUserMixin, current_user
 from . import db, login_manager
+from .exceptions import ValidationError
 import sqlalchemy as sa
 from sqlalchemy_continuum import make_versioned
 from sqlalchemy_continuum.plugins import ActivityPlugin, FlaskPlugin
@@ -301,6 +302,23 @@ class User(UserMixin, db.Model):
         return Activity.query.join(Follow, Follow.followed_id == Activity.actor_id) \
             .filter(Follow.follower_id == self.id)
 
+    def to_json(self):
+        json_user = {
+            'url': url_for('api.get_user', id=self.id, _external=True),
+            'username': self.username,
+            'member_since': self.member_since,
+            'last_seen': self.last_seen,
+            'questions': url_for('api.get_user_questions', id=self.id,
+                                 _external=True),
+            'answers': url_for('api.get_user_answers', id=self.id,
+                               _external=True),
+            'followed_activities': url_for('api.get_user_followed_activities',
+                                           id=self.id, _external=True),
+            'question_count': self.questions.count(),
+            'answer_count': self.answers.count()
+        }
+        return json_user
+
     def generate_auth_token(self, expiration):
         s = Serializer(current_app.config['SECRET_KEY'],
                        expires_in=expiration)
@@ -362,6 +380,30 @@ class Question(db.Model):
             db.session.add(q)
             db.session.commit()
 
+    def to_json(self):
+        json_question = {
+            'url': url_for('api.get_question', id=self.id, _external=True),
+            'body': self.body,
+            'detail': self.detail,
+            'timestamp': self.timestamp,
+            'author': url_for('api.get_user', id=self.author_id,
+                              _external=True),
+            'answers': url_for('api.get_question_answers', id=self.id,
+                               _external=True),
+            'answer_count': self.answers.count(),
+            'comments': url_for('api.get_questions_comments', id=self.id,
+                                _external=True),
+            'comment_count': self.comments.count()
+        }
+        return json_question
+
+    @staticmethod
+    def from_json(json_question):
+        body = json_question.get('body')
+        if body is None or body == '':
+            raise ValidationError('question does not have a body')
+        return Question(body=body)
+
 
 class Answer(db.Model):
     __versioned__ = {}
@@ -388,6 +430,28 @@ class Answer(db.Model):
         target.body_html = bleach.linkify(bleach.clean(
                 markdown(value, output_format='html'),
                 tags=allowed_tags, attributes=allowed_attrs, strip=True))
+
+    def to_json(self):
+        json_answer = {
+            'url': url_for('api.get_answer', id=self.id, _external=True),
+            'question': url_for('api.get_question', id=self.question_id,
+                                _external=True),
+            'body': self.body,
+            'body_html': self.body_html,
+            'timestamp': self.timestamp,
+            'author': url_for('api.get_user', id=self.author_id,
+                              _external=True),
+            'upvotes': self.upvotes,
+            'ranking': self.ranking
+        }
+        return json_answer
+
+    @staticmethod
+    def from_json(json_answer):
+        body = json_answer.get('body')
+        if body is None or body == '':
+            raise ValidationError('answer does not have a body')
+        return Answer(body=body)
 
 
 def generate_ranking(upvotes, downvotes):
@@ -416,6 +480,25 @@ class Comment(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     question_id = db.Column(db.Integer, db.ForeignKey('questions.id'))
     answer_id = db.Column(db.Integer, db.ForeignKey('answers.id'))
+
+    def to_json(self):
+        json_comment = {
+            'url': url_for('api.get_comment', id=self.id, _external=True),
+            'question': url_for('api.get_question', id=self.question_id,
+                                _external=True),
+            'answer': url_for('api.get_answer', id=self.answer_id,_external=True),
+            'body': self.body,
+            'timestamp': self.timestamp,
+            'author': url_for('api.get_user', id=self.author_id, _external=True)
+        }
+        return json_comment
+
+    @staticmethod
+    def from_json(json_comment):
+        body = json_comment.get('body')
+        if body is None or body == '':
+            raise ValidationError('comment does not have a body')
+        return Comment(body=body)
 
 
 class Vote(db.Model):
