@@ -33,7 +33,7 @@ def get_question():
     return jsonify(question.to_json())
 
 
-@api.route('/questions/', method=['POST'])
+@api.route('/questions/', methods=['POST'])
 @permission_required(Permission.ASK)
 def new_question():
     question = Question.from_json(request.json)

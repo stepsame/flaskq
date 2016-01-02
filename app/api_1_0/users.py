@@ -53,7 +53,7 @@ def get_user_answers(id):
     })
 
 
-@api.rout('/users/<int:id>/timeline/')
+@api.route('/users/<int:id>/timeline/')
 def get_user_followed_activities(id):
     user = User.query.get_or_404(id)
     page = request.args.get('page', 1, type=int)

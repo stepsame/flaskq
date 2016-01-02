@@ -1,2 +1,6 @@
 -r common.txt
 ForgeryPy==0.1
+Pygments==2.0.2
+colorama==0.3.5
+httpie==0.9.3
+requests==2.9.1
