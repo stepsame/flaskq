@@ -391,7 +391,7 @@ class Question(db.Model):
             'answers': url_for('api.get_question_answers', id=self.id,
                                _external=True),
             'answer_count': self.answers.count(),
-            'comments': url_for('api.get_questions_comments', id=self.id,
+            'comments': url_for('api.get_question_comments', id=self.id,
                                 _external=True),
             'comment_count': self.comments.count()
         }
