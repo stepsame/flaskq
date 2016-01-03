@@ -484,13 +484,16 @@ class Comment(db.Model):
     def to_json(self):
         json_comment = {
             'url': url_for('api.get_comment', id=self.id, _external=True),
-            'question': url_for('api.get_question', id=self.question_id,
-                                _external=True),
-            'answer': url_for('api.get_answer', id=self.answer_id,_external=True),
             'body': self.body,
             'timestamp': self.timestamp,
             'author': url_for('api.get_user', id=self.author_id, _external=True)
         }
+        if self.question_id:
+            json_comment['question'] = url_for(
+                    'api.get_question', id=self.question_id, _external=True)
+        if self.answer_id:
+            json_comment['answer'] = url_for(
+                    'api.get_answer', id=self.answer_id, _external=True)
         return json_comment
 
     @staticmethod

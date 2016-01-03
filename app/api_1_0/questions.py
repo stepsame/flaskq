@@ -1,6 +1,6 @@
 from flask import jsonify, request, g, url_for, current_app
 from .. import db
-from ..models import Question, Permission
+from ..models import Question, Permission, Activity
 from . import api
 from .decorators import permission_required
 from .errors import forbidden
@@ -28,8 +28,8 @@ def get_questions():
 
 
 @api.route('/questions/<int:id>')
-def get_question():
-    question = Question.query.get_or_404(id)
+def get_question(id):
+    question = Question.query.get(id)
     return jsonify(question.to_json())
 
 
@@ -39,6 +39,11 @@ def new_question():
     question = Question.from_json(request.json)
     question.author = g.current_user
     db.session.add(question)
+    db.session.flush()
+    question_activity = Activity(verb='asked', object=question,
+                                  actor_id=g.current_user.id,
+                                     timestamp=question.timestamp)
+    db.session.add(question_activity)
     db.session.commit()
     return jsonify(question.to_json()), 201, \
         {'Location': url_for('api.get_question', id=question.id, _external=True)}

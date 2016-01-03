@@ -1,6 +1,6 @@
 from flask import jsonify, request, g, url_for, current_app
 from .. import db
-from ..models import Permission, Question, Answer
+from ..models import Permission, Question, Answer, Activity
 from . import api
 from .decorators import permission_required
 from .errors import forbidden
@@ -20,7 +20,7 @@ def get_answers():
     if pagination.has_next:
         next = url_for('api.get_answers', page=page+1, _external=True)
     return jsonify({
-        'posts': [answer.to_json() for answer in answers],
+        'answers': [answer.to_json() for answer in answers],
         'prev': prev,
         'next': next,
         'count': pagination.total
@@ -29,7 +29,7 @@ def get_answers():
 
 @api.route('/answers/<int:id>')
 def get_answer(id):
-    answer = Answer.query.get_or_404(id)
+    answer = Answer.query.get(id)
     return jsonify(answer.to_json())
 
 
@@ -48,7 +48,7 @@ def get_question_answers(id):
     if pagination.has_next:
         next = url_for('api.get_question_answers', page=page+1, _external=True)
     return jsonify({
-        'posts': [answer.to_json() for answer in answers],
+        'answers': [answer.to_json() for answer in answers],
         'prev': prev,
         'next': next,
         'count': pagination.total
@@ -57,11 +57,17 @@ def get_question_answers(id):
 
 @api.route('/questions/<int:id>/answers/', methods=['POST'])
 @permission_required(Permission.ANSWER)
-def new_question_answers(id):
+def new_question_answer(id):
     question = Question.query.get_or_404(id)
     answer = Answer.from_json(request.json)
     answer.author = g.current_user
+    answer.question = question
     db.session.add(answer)
+    db.session.flush()
+    answer_activity = Activity(verb='wrote', object=answer,
+                                  actor_id=g.current_user.id,
+                                   timestamp=answer.timestamp)
+    db.session.add(answer_activity)
     db.session.commit()
     return jsonify(answer.to_json()), 201, \
         {'Location': url_for('api.get_answer', id=answer.id, _external=True)}

@@ -18,7 +18,12 @@ def get_comments():
     next = None
     if pagination.has_next:
         next = url_for('api.get_comments', page=page+1, _external=True)
-    return jsonify({'comments': [comment.to_json() for comment in comments]})
+    return jsonify({
+        'comments': [comment.to_json() for comment in comments],
+        'prev': prev,
+        'next': next,
+        'count': pagination.total
+    })
 
 
 @api.route('/comments/<int:id>')
@@ -42,7 +47,7 @@ def get_question_comments(id):
     if pagination.has_next:
         next = url_for('api.get_question_comments', page=page+1, _external=True)
     return jsonify({
-        'posts': [comment.to_json() for comment in comments],
+        'comments': [comment.to_json() for comment in comments],
         'prev': prev,
         'next': next,
         'count': pagination.total
@@ -64,7 +69,7 @@ def get_answer_comments(id):
     if pagination.has_next:
         next = url_for('api.get_answer_comments', page=page+1, _external=True)
     return jsonify({
-        'posts': [comment.to_json() for comment in comments],
+        'comments': [comment.to_json() for comment in comments],
         'prev': prev,
         'next': next,
         'count': pagination.total
@@ -77,6 +82,7 @@ def new_question_comment(id):
     question = Question.query.get_or_404(id)
     comment = Comment.from_json(request.json)
     comment.author = g.current_user
+    comment.question = question
     db.session.add(comment)
     db.session.commit()
     return jsonify(comment.to_json()), 201, \
@@ -89,6 +95,7 @@ def new_answer_comment(id):
     answer = Answer.query.get_or_404(id)
     comment = Comment.from_json(request.json)
     comment.author = g.current_user
+    comment.answer = answer
     db.session.add(comment)
     db.session.commit()
     return jsonify(comment.to_json()), 201, \
