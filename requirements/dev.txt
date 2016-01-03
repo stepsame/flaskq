@@ -5,3 +5,4 @@ colorama==0.3.5
 coverage==4.0.3
 httpie==0.9.3
 requests==2.9.1
+selenium==2.48.0
