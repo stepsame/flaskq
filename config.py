@@ -7,6 +7,7 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'hard to guess string'
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_RECORD_QUERIES = True
     FLASKQ_MAIL_SUBJECT_PREFIX = '[Flaskq]'
     FLASKQ_MAIL_SENDER = 'Flaskq Admin <stepsame@yahoo.com>'
     FLASKQ_ADMIN = os.environ.get('FLASKQ_ADMIN')
@@ -15,6 +16,7 @@ class Config:
     FLASKQ_ANSWERS_PER_PAGE = 30
     FLASKQ_COMMENTS_PER_PAGE = 30
     FLASKQ_ACTIVITIES_PER_PAGE = 20
+    FLASKQ_SLOW_DB_QUERY_TIME = 0.5
 
     @staticmethod
     def init_app(app):
