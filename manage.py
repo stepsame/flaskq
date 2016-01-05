@@ -7,7 +7,7 @@ if os.environ.get('FLASK_COVERAGE'):
     COV.start()
 
 if os.path.exists('.env'):
-    print('Importing environment from .evn...')
+    print('Importing environment from .env...')
     for line in open('.env'):
         var = line.strip().split('=')
         if len(var) == 2:
