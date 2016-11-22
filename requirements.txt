@@ -1,4 +1,2 @@
 -r requirements/prod.txt
-gunicorn==18.0.0
-psycopg2==2.6.1
 Flask-SSLify==0.1.5

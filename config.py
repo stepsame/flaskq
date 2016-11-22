@@ -8,13 +8,13 @@ class Config:
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_RECORD_QUERIES = True
-    MAIL_SERVER = 'smtp.qq.com'
+    MAIL_SERVER = 'smtp.mail.yahoo.com'
     MAIL_PORT = 465
     MAIL_USE_SSL = True
-    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
-    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME') or 'stepsame@yahoo.com'
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD') or 'Ybgyq7hjbf30H'
     FLASKQ_MAIL_SUBJECT_PREFIX = '[Flaskq]'
-    FLASKQ_MAIL_SENDER = 'Flaskq Admin <stepsame@foxmail.com>'
+    FLASKQ_MAIL_SENDER = 'Flaskq Admin <stepsame@yahoo.com>'
     FLASKQ_ADMIN = os.environ.get('FLASKQ_ADMIN')
     FLASKQ_QUESTIONS_PER_PAGE = 20
     FLASKQ_FOLLOWERS_PER_PAGE = 50
